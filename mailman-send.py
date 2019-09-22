@@ -439,7 +439,7 @@ def main():
     logger.info('g_test:        %s' % g_test)
     logger.info('task_id:       %s' % g_task_config['task_id'])
     logger.info('task_name:     %s' % g_task_config['task_name'])
-    logger.info('domian:        %s' % g_task_config['domian'])
+    logger.info('domain:        %s' % g_task_config['domain'])
     logger.info('from:          %s' % g_task_config['from'])
     logger.info('from_alias:    %s' % g_task_config['from_alias'])
     logger.info('interval:      %s' % g_task_config['interval'])
