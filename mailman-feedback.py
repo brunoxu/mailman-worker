@@ -103,100 +103,6 @@ def start_feedback():
 
 
 
-# 主程序入口
-def main():
-    global g_workdir, g_logdir, g_test\
-        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
-        ,g_task_config, g_task_tmp1\
-        ,g_file_task_tmp2, g_task_tmp2
-
-    parse_args()
-
-    # if not os.path.isdir(g_workdir):
-    #     os.mkdir(g_workdir)
-    # if not os.path.isdir(g_logdir):
-    #     os.mkdir(g_logdir)
-
-    g_file_task_config = 'task.config.txt'
-    g_file_task_mails = 'task.mails.csv'
-    g_file_mail_result = 'task.mail_result.csv'
-    g_file_task_tmp1 = 'task.tmp1.txt'
-    g_file_task_tmp2 = 'task.tmp2.txt'
-
-    g_file_task_config = os.path.join(g_workdir, g_file_task_config)
-    g_file_task_mails = os.path.join(g_workdir, g_file_task_mails)
-    g_file_mail_result = os.path.join(g_workdir, g_file_mail_result)
-    g_file_task_tmp1 = os.path.join(g_workdir, g_file_task_tmp1)
-    g_file_task_tmp2 = os.path.join(g_workdir, g_file_task_tmp2)
-
-    #检查是否在运行
-    # pid = os.getpid()
-    # pid_file = os.path.join(g_workdir, 'pid')
-    # if os.path.isfile(pid_file):
-    #     pid_in_file = get_file_content(pid_file)
-    #     if (check_pid(pid_in_file)):
-    #         print '程序运行中，退出程序'
-    #         os._exit()
-    #     else:
-    #         os.remove(pid_file)
-    # set_file_content(pid_file, pid)
-
-    # 获取配置
-    # if not(os.path.isfile(g_file_task_config)):
-    #     conn = httplib.HTTPSConnection('mailman.sme.wang')
-    #     conn.request("GET", "/edm/campaign/api_get_task")
-    #     response = conn.getresponse()
-    #     task_config_str = response.read()
-    #     g_task_config = json.loads(task_config_str)
-    #     if g_task_config['task_id']==0:
-    #         print '当前没有任务可接'
-    #         sys.exit()
-    #     else:
-    #         set_file_content(g_file_task_config, task_config_str)
-    #     conn.close()
-    # else:
-    #     g_task_config = json.loads(get_file_content(g_file_task_config))
-
-    # 检查mail_result文件
-    if not(os.path.isfile(g_file_mail_result)):
-        print 'mail_result文件不存在'
-        sys.exit()
-
-    # 检查tmp2文件
-    if not(os.path.isfile(g_file_task_tmp2)):
-        print 'tmp2文件不存在'
-        sys.exit()
-
-    # 获取tmp2
-    g_task_tmp2 = json.loads(get_file_content(g_file_task_tmp2))
-
-    # 检查时间
-    result_mtime = get_FileModifyTime(g_file_mail_result)
-    if g_task_tmp2['mail_feedback_last_time']>result_mtime:
-        print 'mail_result文件没有新数据，无须处理'
-        sys.exit()
-
-    # 开始工作
-    start_feedback()
-
-def all_done():
-    global g_workdir, g_logdir, g_test\
-        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
-        ,g_task_config, g_task_tmp1\
-        ,g_file_task_tmp2, g_task_tmp2
-
-    # 保存tmp2
-    if g_task_tmp2:
-        set_file_content(g_file_task_tmp2, json.dumps(g_task_tmp2))
-
-# 程序起始
-if __name__ == '__main__':
-    atexit.register(all_done)
-    main()
-
-
-
-
 # 日志功能
 def logs(level, msg):
     global g_logdir
@@ -287,3 +193,97 @@ def get_FileModifyTime(filePath):
     filePath = unicode(filePath,'utf8')
     t = os.path.getmtime(filePath)
     return TimeStampToTime(t)
+
+
+
+
+# 主程序入口
+def main():
+    global g_workdir, g_logdir, g_test\
+        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
+        ,g_task_config, g_task_tmp1\
+        ,g_file_task_tmp2, g_task_tmp2
+
+    parse_args()
+
+    # if not os.path.isdir(g_workdir):
+    #     os.mkdir(g_workdir)
+    # if not os.path.isdir(g_logdir):
+    #     os.mkdir(g_logdir)
+
+    g_file_task_config = 'task.config.txt'
+    g_file_task_mails = 'task.mails.csv'
+    g_file_mail_result = 'task.mail_result.csv'
+    g_file_task_tmp1 = 'task.tmp1.txt'
+    g_file_task_tmp2 = 'task.tmp2.txt'
+
+    g_file_task_config = os.path.join(g_workdir, g_file_task_config)
+    g_file_task_mails = os.path.join(g_workdir, g_file_task_mails)
+    g_file_mail_result = os.path.join(g_workdir, g_file_mail_result)
+    g_file_task_tmp1 = os.path.join(g_workdir, g_file_task_tmp1)
+    g_file_task_tmp2 = os.path.join(g_workdir, g_file_task_tmp2)
+
+    #检查是否在运行
+    # pid = os.getpid()
+    # pid_file = os.path.join(g_workdir, 'pid')
+    # if os.path.isfile(pid_file):
+    #     pid_in_file = get_file_content(pid_file)
+    #     if (check_pid(pid_in_file)):
+    #         print '程序运行中，退出程序'
+    #         os._exit()
+    #     else:
+    #         os.remove(pid_file)
+    # set_file_content(pid_file, pid)
+
+    # 获取配置
+    # if not(os.path.isfile(g_file_task_config)):
+    #     conn = httplib.HTTPSConnection('mailman.sme.wang')
+    #     conn.request("GET", "/edm/campaign/api_get_task")
+    #     response = conn.getresponse()
+    #     task_config_str = response.read()
+    #     g_task_config = json.loads(task_config_str)
+    #     if g_task_config['task_id']==0:
+    #         print '当前没有任务可接'
+    #         sys.exit()
+    #     else:
+    #         set_file_content(g_file_task_config, task_config_str)
+    #     conn.close()
+    # else:
+    #     g_task_config = json.loads(get_file_content(g_file_task_config))
+
+    # 检查mail_result文件
+    if not(os.path.isfile(g_file_mail_result)):
+        print 'mail_result文件不存在'
+        sys.exit()
+
+    # 检查tmp2文件
+    if not(os.path.isfile(g_file_task_tmp2)):
+        print 'tmp2文件不存在'
+        sys.exit()
+
+    # 获取tmp2
+    g_task_tmp2 = json.loads(get_file_content(g_file_task_tmp2))
+
+    # 检查时间
+    result_mtime = get_FileModifyTime(g_file_mail_result)
+    if g_task_tmp2['mail_feedback_last_time']>result_mtime:
+        print 'mail_result文件没有新数据，无须处理'
+        sys.exit()
+
+    # 开始工作
+    start_feedback()
+
+def all_done():
+    global g_workdir, g_logdir, g_test\
+        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
+        ,g_task_config, g_task_tmp1\
+        ,g_file_task_tmp2, g_task_tmp2
+
+    # 保存tmp2
+    if g_task_tmp2:
+        set_file_content(g_file_task_tmp2, json.dumps(g_task_tmp2))
+
+# 程序起始
+if __name__ == '__main__':
+    atexit.register(all_done)
+    main()

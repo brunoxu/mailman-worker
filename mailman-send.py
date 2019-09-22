@@ -206,6 +206,100 @@ def sendmail(from_email, to_email, message, s_server='localhost', s_account='', 
 
 
 
+# 日志功能
+def logs(level, msg):
+    global g_logdir
+
+    #msg_code = chardet.detect(msg)
+    #
+    #if msg_code["encoding"] == "GB2312":
+    #    msg = msg.decode('gbk').encode("utf-8")
+
+    LEVEL = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
+    # print datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    if level == 0:
+        fhd = open(g_logdir + '/debug.log', 'ab+')
+    elif level == 3:
+        fhd = open(g_logdir + '/stderr.log', 'ab+')
+    else:
+        fhd = open(g_logdir + '/stdout.log', 'ab+')
+
+    fhd.write("%s %-8s %s\n" %
+              (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), LEVEL[level], msg))
+
+    fhd.close()
+    #log.log(level, msg)
+    # if level == "debug":
+    #     logger.debug(msg)
+    # elif level == "err":
+    #     logger.error(msg)
+    # else:
+    #     logger.info(msg)
+
+def check_pid(pid):
+    """ Check For the existence of a unix pid. """
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    else:
+        return True
+
+def get_file_content(file):
+    content = False
+    if (os.path.isfile(file)):
+        with open(file, 'r') as fp:
+            content = fp.read().strip()
+        fp.close()
+    return content
+
+def set_file_content(file, content, append=False):
+    mode = 'w' if not append else 'a'
+    with open(file, mode) as fp:
+        fp.write(content)
+    fp.close()
+
+def set_csv_content(file, row, append=False):
+    mode = 'w' if not append else 'a'
+    with open(file, mode) as fp:
+        csvwriter = csv.writer(fp)
+        csvwriter.writerow(row)
+    fp.close()
+
+'''把时间戳转化为时间: 1479264792 to 2016-11-16 10:53:12'''
+def TimeStampToTime(timestamp):
+    timeStruct = time.localtime(timestamp)
+    return time.strftime('%Y-%m-%d %H:%M:%S',timeStruct)
+
+'''获取文件的大小,结果保留两位小数，单位为MB'''
+def get_FileSize(filePath):
+    filePath = unicode(filePath,'utf8')
+    fsize = os.path.getsize(filePath)
+    fsize = fsize/float(1024*1024)
+    return round(fsize,2)
+
+'''获取文件的访问时间'''
+def get_FileAccessTime(filePath):
+    filePath = unicode(filePath,'utf8')
+    t = os.path.getatime(filePath)
+    return TimeStampToTime(t)
+
+'''获取文件的创建时间'''
+def get_FileCreateTime(filePath):
+    filePath = unicode(filePath,'utf8')
+    t = os.path.getctime(filePath)
+    return TimeStampToTime(t)
+
+'''获取文件的修改时间'''
+def get_FileModifyTime(filePath):
+    filePath = unicode(filePath,'utf8')
+    t = os.path.getmtime(filePath)
+    return TimeStampToTime(t)
+
+
+
+
 # 主程序入口
 def main():
     global g_workdir, g_logdir, g_test\
@@ -371,97 +465,3 @@ def all_done():
 if __name__ == '__main__':
     atexit.register(all_done)
     main()
-
-
-
-
-# 日志功能
-def logs(level, msg):
-    global g_logdir
-
-    #msg_code = chardet.detect(msg)
-    #
-    #if msg_code["encoding"] == "GB2312":
-    #    msg = msg.decode('gbk').encode("utf-8")
-
-    LEVEL = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-
-    # print datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    if level == 0:
-        fhd = open(g_logdir + '/debug.log', 'ab+')
-    elif level == 3:
-        fhd = open(g_logdir + '/stderr.log', 'ab+')
-    else:
-        fhd = open(g_logdir + '/stdout.log', 'ab+')
-
-    fhd.write("%s %-8s %s\n" %
-              (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), LEVEL[level], msg))
-
-    fhd.close()
-    #log.log(level, msg)
-    # if level == "debug":
-    #     logger.debug(msg)
-    # elif level == "err":
-    #     logger.error(msg)
-    # else:
-    #     logger.info(msg)
-
-def check_pid(pid):
-    """ Check For the existence of a unix pid. """
-    try:
-        os.kill(pid, 0)
-    except OSError:
-        return False
-    else:
-        return True
-
-def get_file_content(file):
-    content = False
-    if (os.path.isfile(file)):
-        with open(file, 'r') as fp:
-            content = fp.read().strip()
-        fp.close()
-    return content
-
-def set_file_content(file, content, append=False):
-    mode = 'w' if not append else 'a'
-    with open(file, mode) as fp:
-        fp.write(content)
-    fp.close()
-
-def set_csv_content(file, row, append=False):
-    mode = 'w' if not append else 'a'
-    with open(file, mode) as fp:
-        csvwriter = csv.writer(fp)
-        csvwriter.writerow(row)
-    fp.close()
-
-'''把时间戳转化为时间: 1479264792 to 2016-11-16 10:53:12'''
-def TimeStampToTime(timestamp):
-    timeStruct = time.localtime(timestamp)
-    return time.strftime('%Y-%m-%d %H:%M:%S',timeStruct)
-
-'''获取文件的大小,结果保留两位小数，单位为MB'''
-def get_FileSize(filePath):
-    filePath = unicode(filePath,'utf8')
-    fsize = os.path.getsize(filePath)
-    fsize = fsize/float(1024*1024)
-    return round(fsize,2)
-
-'''获取文件的访问时间'''
-def get_FileAccessTime(filePath):
-    filePath = unicode(filePath,'utf8')
-    t = os.path.getatime(filePath)
-    return TimeStampToTime(t)
-
-'''获取文件的创建时间'''
-def get_FileCreateTime(filePath):
-    filePath = unicode(filePath,'utf8')
-    t = os.path.getctime(filePath)
-    return TimeStampToTime(t)
-
-'''获取文件的修改时间'''
-def get_FileModifyTime(filePath):
-    filePath = unicode(filePath,'utf8')
-    t = os.path.getmtime(filePath)
-    return TimeStampToTime(t)
