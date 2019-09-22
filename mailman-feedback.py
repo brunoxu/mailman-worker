@@ -154,7 +154,8 @@ def get_file_content(file):
 def set_file_content(file, content, append=False):
     mode = 'w' if not append else 'a'
     with open(file, mode) as fp:
-        fp.write(content)
+        # fp.write(content) #TypeError: expected a string or other character buffer object
+        fp.write(str(content))
     fp.close()
 
 def set_csv_content(file, row, append=False):
