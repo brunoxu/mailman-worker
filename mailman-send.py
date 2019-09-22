@@ -21,6 +21,7 @@ import atexit
 import httplib
 import urllib
 import json
+from io import open
 
 
 # global variables
