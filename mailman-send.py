@@ -78,7 +78,6 @@ def start_send():
                 continue
             else:
                 g_task_tmp1['mail_send_last_row'] = row_count
-                g_task_tmp1['mail_send_last_time'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             if not row:
                 continue
@@ -126,6 +125,12 @@ def start_send():
                 print('发送测试邮件 send_result:%s, send_error:%s' % (send_result, send_error))
                 sys.exit()
         fp.close()
+
+        # 记录完成
+        g_task_tmp1['mail_send_finished'] = 1
+        g_task_tmp1['mail_send_finish_time'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # 任务完成反馈
         conn = httplib.HTTPSConnection('mailman.sme.wang')
         params = {
             "task_id": g_task_config['task_id']
@@ -255,6 +260,20 @@ def main():
     else:
         g_task_config = json.loads(get_file_content(g_file_task_config))
 
+    # 处理和检查from
+    if not g_task_config['from']:
+        if g_task_config['smtp_account'].find('@')>-1:
+            g_task_config['from'] = g_task_config['smtp_account']
+    else:
+        if g_task_config['smtp_account'].find('@')>-1 and g_task_config['smtp_account']<>g_task_config['from']:
+            g_task_config['from'] = g_task_config['smtp_account']
+    if not g_task_config['from']:
+        print '发件人邮箱为空'
+        sys.exit()
+    if g_task_config['from'].find('@')==-1:
+        print '发件人邮箱格式不对'
+        sys.exit()
+
     # 获取邮件
     if not(os.path.isfile(g_file_task_mails)):
         # import wget
@@ -293,11 +312,18 @@ def main():
     if not(os.path.isfile(g_file_task_tmp1)):
         g_task_tmp1 = {
             "mail_send_last_row": 0,
-            "mail_send_last_time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            'mail_send_finished': 0,
+            "mail_send_finish_time": '',
             }
         set_file_content(g_file_task_tmp1, json.dumps(g_task_tmp1))
     else:
         g_task_tmp1 = json.loads(get_file_content(g_file_task_tmp1))
+
+    # 检查时间
+    mails_mtime = get_FileModifyTime(g_file_task_mails)
+    if g_task_tmp1['mail_send_finished'] and g_task_tmp1['mail_send_finish_time']>mails_mtime:
+        print 'mails文件没有新数据，无须处理'
+        sys.exit()
 
     # 初始化tmp2
     if not(os.path.isfile(g_file_task_tmp2)):
@@ -306,21 +332,6 @@ def main():
             "mail_feedback_last_time": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
         set_file_content(g_file_task_tmp2, json.dumps(g_task_tmp2))
-
-    # 处理和检查from
-    if not g_task_config['from']:
-        if g_task_config['smtp_account'].find('@')>-1:
-            g_task_config['from'] = g_task_config['smtp_account']
-    else:
-        if g_task_config['smtp_account'].find('@')>-1 and g_task_config['smtp_account']<>g_task_config['from']:
-            g_task_config['from'] = g_task_config['smtp_account']
-
-    if not g_task_config['from']:
-        print '发件人邮箱为空'
-        sys.exit()
-    if g_task_config['from'].find('@')==-1:
-        print '发件人邮箱格式不对'
-        sys.exit()
 
     # info
     logger = logging.getLogger()
