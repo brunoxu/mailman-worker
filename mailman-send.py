@@ -387,7 +387,8 @@ def main():
             #     }
             params = urllib.urlencode(params)
             # conn.request("POST", uri, params, headers)
-            conn.request("GET", "/edm/campaign/api_get_mails", params)
+            # conn.request("GET", "/edm/campaign/api_get_mails", params) #NG
+            conn.request("GET", "/edm/campaign/api_get_mails"+'?'+params)
             response = conn.getresponse()
             content = response.read()
             if content:
