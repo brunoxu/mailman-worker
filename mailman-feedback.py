@@ -100,8 +100,8 @@ def start_feedback():
             if not row:
                 continue
 
-            # print("第%s行 %s" % (str(row)))
-            print("row %s, %s" % (str(row)))
+            # print("第%s行 %s" % (row_count, str(row)))
+            print("row %s, %s" % (row_count, str(row)))
 
             params = {
                 "mail_id": row[0],
