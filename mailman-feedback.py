@@ -84,8 +84,6 @@ def start_feedback():
         ,g_task_config, g_task_tmp1\
         ,g_file_task_tmp2, g_task_tmp2
 
-    interval_arr = g_task_config['interval'].split(',')
-
     with open(g_file_mail_result, mode='r') as fp:
         csv_reader = csv.reader(fp, delimiter=',')
         row_count = 0
