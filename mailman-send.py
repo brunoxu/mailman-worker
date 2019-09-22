@@ -107,7 +107,8 @@ def start_send():
             time.sleep(float(delay_seconds))
 
             # logs(1, "row %s, to:%s, delay:%s" % (row_count, to_mail, delay_seconds))
-            print("第%s行 to:%s, delay:%s" % (row_count, to_mail, delay_seconds))
+            # print("第%s行 to:%s, delay:%s" % (row_count, to_mail, delay_seconds))
+            print("row %s, to:%s, delay:%s" % (row_count, to_mail, delay_seconds))
 
             # 拼接sendmail用的message，包含header和content
             msg = MIMEMultipart()
