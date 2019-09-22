@@ -62,9 +62,9 @@ def parse_args():
 
 # 发反馈
 def start_feedback():
-    global g_workdir, g_logdir, g_test
-        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1
-        ,g_task_config, g_task_tmp1
+    global g_workdir, g_logdir, g_test\
+        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
+        ,g_task_config, g_task_tmp1\
         ,g_file_task_tmp2, g_task_tmp2
 
     interval_arr = g_task_config['interval'].split(',')
@@ -105,9 +105,9 @@ def start_feedback():
 
 # 主程序入口
 def main():
-    global g_workdir, g_logdir, g_test
-        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1
-        ,g_task_config, g_task_tmp1
+    global g_workdir, g_logdir, g_test\
+        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
+        ,g_task_config, g_task_tmp1\
         ,g_file_task_tmp2, g_task_tmp2
 
     parse_args()
@@ -185,9 +185,9 @@ if __name__ == '__main__':
     main()
 
 def all_done():
-    global g_workdir, g_logdir, g_test
-        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1
-        ,g_task_config, g_task_tmp1
+    global g_workdir, g_logdir, g_test\
+        ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
+        ,g_task_config, g_task_tmp1\
         ,g_file_task_tmp2, g_task_tmp2
 
     # 保存tmp2
