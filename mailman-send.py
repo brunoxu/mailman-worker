@@ -21,7 +21,6 @@ import atexit
 import httplib
 import urllib
 import json
-from io import open
 
 
 # global variables
@@ -69,7 +68,8 @@ def start_send():
 
     interval_arr = g_task_config['interval'].split(',')
 
-    with open(g_file_task_mails, mode='r', encoding="utf-8") as fp:
+    import io
+    with io.open(g_file_task_mails, mode='r', encoding="utf-8") as fp:
         csv_reader = csv.reader(fp, delimiter=',')
         row_count = 0
         for row in csv_reader:
