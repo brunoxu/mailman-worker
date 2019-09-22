@@ -179,11 +179,6 @@ def main():
     # 开始工作
     start_feedback()
 
-# 程序起始
-if __name__ == '__main__':
-    atexit.register(all_done)
-    main()
-
 def all_done():
     global g_workdir, g_logdir, g_test\
         ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
@@ -193,6 +188,11 @@ def all_done():
     # 保存tmp2
     if g_task_tmp2:
         set_file_content(g_file_task_tmp2, json.dumps(g_task_tmp2))
+
+# 程序起始
+if __name__ == '__main__':
+    atexit.register(all_done)
+    main()
 
 
 
