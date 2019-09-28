@@ -95,6 +95,7 @@ def start_send():
             if row_count<=g_task_tmp1['mail_send_last_row']:
                 continue
             else:
+                set_file_content(g_file_task_tmp1, json.dumps(g_task_tmp1))
                 g_task_tmp1['mail_send_last_row'] = row_count
 
             if not row:
