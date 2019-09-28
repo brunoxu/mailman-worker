@@ -21,6 +21,7 @@ import atexit
 import httplib
 import urllib
 import json
+import yaml
 
 
 # global variables
@@ -349,7 +350,7 @@ def main():
     pid = os.getpid()
     pid_file = os.path.join(g_workdir, 'pid')
     if os.path.isfile(pid_file):
-        pid_in_file = get_file_content(pid_file)
+        pid_in_file = int(get_file_content(pid_file))
         if (check_pid(pid_in_file)):
             print '程序运行中，退出程序'
             os._exit()
@@ -363,7 +364,7 @@ def main():
         conn.request("GET", "/edm/campaign/api_get_task")
         response = conn.getresponse()
         task_config_str = response.read()
-        g_task_config = json.loads(task_config_str)
+        g_task_config = yaml.safe_load(task_config_str)
         if g_task_config['task_id']==0:
             print '当前没有任务可接'
             sys.exit()
@@ -371,7 +372,7 @@ def main():
             set_file_content(g_file_task_config, task_config_str)
         conn.close()
     else:
-        g_task_config = json.loads(get_file_content(g_file_task_config))
+        g_task_config = yaml.safe_load(get_file_content(g_file_task_config))
 
     # 处理和检查from
     if not g_task_config['from']:
@@ -431,7 +432,7 @@ def main():
             }
         set_file_content(g_file_task_tmp1, json.dumps(g_task_tmp1))
     else:
-        g_task_tmp1 = json.loads(get_file_content(g_file_task_tmp1))
+        g_task_tmp1 = yaml.safe_load(get_file_content(g_file_task_tmp1))
 
     # 检查时间
     mails_mtime = get_FileModifyTime(g_file_task_mails)
