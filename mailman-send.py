@@ -142,7 +142,7 @@ def start_send():
                     , g_task_config['smtp_server'], g_task_config['smtp_account']
                     , g_task_config['smtp_password'], g_task_config['smtp_port'])
                 print('发送测试邮件 send_result:%s, send_error:%s' % (send_result, send_error))
-                sys.exit()
+                sys.exit(1)
         fp.close()
 
         # 记录完成
@@ -181,13 +181,13 @@ def sendmail(from_email, to_email, message, s_server='localhost', s_account='', 
         #print s_port
         if int(s_port) == 465 or int(s_port) == 587:
             #print '1111'
-            #sys.exit()
+            #sys.exit(1)
             # smtp = smtplib.SMTP_SSL('%s' % (s_server), s_port)
             smtp = smtplib.SMTP('%s' % (s_server), s_port)
             smtp.starttls()
         else:
             #print '2222'
-            #sys.exit()
+            #sys.exit(1)
             smtp = smtplib.SMTP('%s' % (s_server), s_port)
         smtp.set_debuglevel(0)
         if s_account:
@@ -353,7 +353,7 @@ def main():
         pid_in_file = int(get_file_content(pid_file))
         if (check_pid(pid_in_file)):
             print '程序运行中，退出程序'
-            os._exit()
+            os._exit(1)
         else:
             os.remove(pid_file)
     set_file_content(pid_file, pid)
@@ -367,7 +367,7 @@ def main():
         g_task_config = yaml.safe_load(task_config_str)
         if g_task_config['task_id']==0:
             print '当前没有任务可接'
-            sys.exit()
+            sys.exit(1)
         else:
             set_file_content(g_file_task_config, task_config_str)
         conn.close()
@@ -383,10 +383,10 @@ def main():
             g_task_config['from'] = g_task_config['smtp_account']
     if not g_task_config['from']:
         print '发件人邮箱为空'
-        sys.exit()
+        sys.exit(1)
     if g_task_config['from'].find('@')==-1:
         print '发件人邮箱格式不对'
-        sys.exit()
+        sys.exit(1)
 
     # 获取邮件
     if not(os.path.isfile(g_file_task_mails)):
@@ -418,7 +418,7 @@ def main():
             else:
                 if ind==0:
                     print '当前任务没有邮件要发'
-                    sys.exit()
+                    sys.exit(1)
                 break
             ind += 1
         conn.close()
@@ -438,7 +438,7 @@ def main():
     mails_mtime = get_FileModifyTime(g_file_task_mails)
     if g_task_tmp1['mail_send_finished'] and g_task_tmp1['mail_send_finish_time']>mails_mtime:
         print 'mails文件没有新数据，无须处理'
-        sys.exit()
+        sys.exit(1)
 
     # 初始化tmp2
     if not(os.path.isfile(g_file_task_tmp2)):
