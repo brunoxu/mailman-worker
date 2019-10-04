@@ -30,6 +30,8 @@ g_workdir = os.path.join(os.path.split(
 g_logdir = os.path.join(os.path.split(
     os.path.realpath(sys.argv[0]))[0], 'log')
 g_test = ''
+g_ipquery = ''
+g_loopexe = ''
 g_file_task_config = ''
 g_file_task_mails = ''
 g_file_mail_result = ''
@@ -42,7 +44,7 @@ g_task_tmp2 = ''
 
 # 解析传进来的参数
 def parse_args():
-    global g_workdir, g_logdir, g_test
+    global g_workdir, g_logdir, g_test, g_ipquery, g_loopexe
 
     parser = argparse.ArgumentParser(description='邮件群发系统')
     parser.add_argument('--work', nargs='?', required=False,
@@ -51,6 +53,10 @@ def parse_args():
                         help='日志目录,默认当前程序运行目录')
     parser.add_argument('--test', nargs='?', required=False,
                         help='测试一封邮件，输入测试邮件收件地址')
+    parser.add_argument('--ipquery', nargs='?', required=False,
+                        help='IP匹配模式接任务')
+    parser.add_argument('--loopexe', nargs='?', required=False,
+                        help='无限循环接任务')
 
     args = vars(parser.parse_args())
     if args['work'] != None:
@@ -59,6 +65,21 @@ def parse_args():
         g_logdir = args['log']
     if args['test'] != None:
         g_test = args['test']
+    if args['ipquery'] != None:
+        g_ipquery = args['ipquery']
+    if args['loopexe'] != None:
+        g_loopexe = args['loopexe']
+
+    if len(g_ipquery)==0:
+        g_ipquery = False
+    else:
+        g_ipquery = True
+
+    if len(g_loopexe)==0:
+        g_loopexe = False
+    else:
+        g_loopexe = True
+
 
 
 # def unicode_csv_reader(unicode_csv_data, dialect=csv.excel, **kwargs):
@@ -160,7 +181,6 @@ def start_send():
         response = conn.getresponse()
         content = response.read()
         conn.close()
-
 
 
 
@@ -323,7 +343,7 @@ def get_FileModifyTime(filePath):
 
 # 主程序入口
 def main():
-    global g_workdir, g_logdir, g_test\
+    global g_workdir, g_logdir, g_test, g_ipquery, g_loopexe\
         ,g_file_task_config, g_file_task_mails, g_file_mail_result, g_file_task_tmp1\
         ,g_task_config, g_task_tmp1\
         ,g_file_task_tmp2, g_task_tmp2
@@ -359,10 +379,10 @@ def main():
             os.remove(pid_file)
     set_file_content(pid_file, pid)
 
-    # 获取配置
+    # 获取配置/接任务
     if not(os.path.isfile(g_file_task_config)):
         conn = httplib.HTTPSConnection('mailman.sme.wang')
-        conn.request("GET", "/edm/campaign/api_get_task")
+        conn.request("GET", "/edm/campaign/api_get_task"+('', '?ip_restrict=1')[g_ipquery])
         response = conn.getresponse()
         task_config_str = response.read()
         g_task_config = yaml.safe_load(task_config_str)
@@ -435,7 +455,19 @@ def main():
     else:
         g_task_tmp1 = yaml.safe_load(get_file_content(g_file_task_tmp1))
 
-    # 检查时间
+    # 是否循环执行
+    if g_loopexe and g_task_tmp1['mail_send_finished'] and os.path.isfile(g_file_task_tmp2):
+        g_task_tmp2 = yaml.safe_load(get_file_content(g_file_task_tmp2))
+        result_mtime = get_FileModifyTime(g_file_mail_result)
+        if g_task_tmp2['mail_feedback_last_time']>result_mtime:
+            workdir_bak = g_workdir+'.'+g_task_config['task_id']
+            logdir_bak = g_logdir+'.'+g_task_config['task_id']
+            os.rename(g_workdir, workdir_bak)
+            os.rename(g_logdir, logdir_bak)
+            print '目录已备份，准备开始新任务'
+            os._exit(1)
+
+    # 是否已完成
     mails_mtime = get_FileModifyTime(g_file_task_mails)
     if g_task_tmp1['mail_send_finished'] and g_task_tmp1['mail_send_finish_time']>mails_mtime:
         print 'mails文件没有新数据，无须处理'
@@ -457,6 +489,8 @@ def main():
     logger.info('g_workdir:     %s' % g_workdir)
     logger.info('g_logdir:      %s' % g_logdir)
     logger.info('g_test:        %s' % g_test)
+    logger.info('g_ipquery:     %s' % g_ipquery)
+    logger.info('g_loopexe:     %s' % g_loopexe)
     logger.info('task_id:       %s' % g_task_config['task_id'])
     logger.info('task_name:     %s' % g_task_config['task_name'])
     logger.info('domain:        %s' % g_task_config['domain'])

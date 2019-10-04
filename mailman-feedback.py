@@ -21,6 +21,7 @@ import atexit
 import httplib
 import urllib
 import json
+import yaml
 
 
 # global variables
@@ -223,11 +224,6 @@ def main():
 
     parse_args()
 
-    # if not os.path.isdir(g_workdir):
-    #     os.mkdir(g_workdir)
-    # if not os.path.isdir(g_logdir):
-    #     os.mkdir(g_logdir)
-
     g_file_task_config = 'task.config.txt'
     g_file_task_mails = 'task.mails.csv'
     g_file_mail_result = 'task.mail_result.csv'
@@ -240,46 +236,33 @@ def main():
     g_file_task_tmp1 = os.path.join(g_workdir, g_file_task_tmp1)
     g_file_task_tmp2 = os.path.join(g_workdir, g_file_task_tmp2)
 
-    #检查是否在运行
-    # pid = os.getpid()
-    # pid_file = os.path.join(g_workdir, 'pid')
-    # if os.path.isfile(pid_file):
-    #     pid_in_file = get_file_content(pid_file)
-    #     if (check_pid(pid_in_file)):
-    #         print '程序运行中，退出程序'
-    #         os._exit()
-    #     else:
-    #         os.remove(pid_file)
-    # set_file_content(pid_file, pid)
-
-    # 获取配置
-    # if not(os.path.isfile(g_file_task_config)):
-    #     conn = httplib.HTTPSConnection('mailman.sme.wang')
-    #     conn.request("GET", "/edm/campaign/api_get_task")
-    #     response = conn.getresponse()
-    #     task_config_str = response.read()
-    #     g_task_config = json.loads(task_config_str)
-    #     if g_task_config['task_id']==0:
-    #         print '当前没有任务可接'
-    #         sys.exit()
-    #     else:
-    #         set_file_content(g_file_task_config, task_config_str)
-    #     conn.close()
-    # else:
-    #     g_task_config = json.loads(get_file_content(g_file_task_config))
-
     # 检查mail_result文件
     if not(os.path.isfile(g_file_mail_result)):
         print 'mail_result文件不存在'
         sys.exit()
 
+    # # 检查配置文件
+    # if not(os.path.isfile(g_file_task_config)):
+    #     print '配置文件不存在'
+    #     sys.exit()
+    # # 获取配置
+    # g_task_config = yaml.safe_load(get_file_content(g_file_task_config))
+
+    # # 检查tmp1文件
+    # if not(os.path.isfile(g_file_task_tmp1)):
+    #     print 'tmp1文件不存在'
+    #     sys.exit()
+    # # 获取tmp1
+    # # g_task_tmp1 = json.loads(get_file_content(g_file_task_tmp1))
+    # g_task_tmp1 = yaml.safe_load(get_file_content(g_file_task_tmp1))
+
     # 检查tmp2文件
     if not(os.path.isfile(g_file_task_tmp2)):
         print 'tmp2文件不存在'
         sys.exit()
-
     # 获取tmp2
-    g_task_tmp2 = json.loads(get_file_content(g_file_task_tmp2))
+    # g_task_tmp2 = json.loads(get_file_content(g_file_task_tmp2))
+    g_task_tmp2 = yaml.safe_load(get_file_content(g_file_task_tmp2))
 
     # 检查时间
     result_mtime = get_FileModifyTime(g_file_mail_result)
