@@ -460,8 +460,8 @@ def main():
         g_task_tmp2 = yaml.safe_load(get_file_content(g_file_task_tmp2))
         result_mtime = get_FileModifyTime(g_file_mail_result)
         if g_task_tmp2['mail_feedback_last_time']>result_mtime:
-            workdir_bak = g_workdir+'.'+g_task_config['task_id']
-            logdir_bak = g_logdir+'.'+g_task_config['task_id']
+            workdir_bak = g_workdir+'.'+str(g_task_config['task_id'])
+            logdir_bak = g_logdir+'.'+str(g_task_config['task_id'])
             os.rename(g_workdir, workdir_bak)
             os.rename(g_logdir, logdir_bak)
             print '目录已备份，准备开始新任务'
