@@ -114,6 +114,7 @@ def start_feedback():
             conn.request("POST", "/edm/campaign/api_mail_feedback", params)
             response = conn.getresponse()
             content = response.read()
+        g_task_tmp2['mail_feedback_last_time'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         conn.close()
         fp.close()
 
