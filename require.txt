@@ -8,4 +8,4 @@ kombu==4.1.0
 MarkupSafe==1.0
 pytz==2017.3
 vine==1.1.4
-pyyaml==5.1.2
+pyyaml==5.4
